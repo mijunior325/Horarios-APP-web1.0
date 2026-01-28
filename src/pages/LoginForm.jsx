@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../server/config/FIrebaseConfig';
+import { findUserByEmail, findUserById } from '../../server/services/userService';
 
 
 
@@ -12,9 +13,13 @@ export default function LoginForm({ onLogin, error, setError }) {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-      console.log("User signed in:", user);
-      if (setError) setError(null);
-      onLogin(user.email);
+
+      // display user data from Firestore
+      const userData = await findUserById(user.uid);
+      console.log("User data:", userData);
+      
+
+      onLogin(userData);
     } catch (error) {
       console.error("Error signing in:", error);
       if (setError) setError("Correo o contraseña incorrectos.");
@@ -23,6 +28,7 @@ export default function LoginForm({ onLogin, error, setError }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log("Attempting to sign in with:", email);
     signIn(email, password);
   };
 
