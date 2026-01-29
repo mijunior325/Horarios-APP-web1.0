@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import * as XLSX from 'xlsx'
 import './App.css'
+import Calendar from './components/Calendar'
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
@@ -199,6 +200,11 @@ function Marcador({ user, onLogout }) {
                 {allUsers().map(u => <option key={u} value={u}>{u}</option>)}
               </select>
               <Historial records={getRecords(selectedUser)} username={selectedUser} />
+
+              <div style={{ marginTop: 20 }}>
+                <h3>Filtro avanzado</h3>
+                <Calendar />
+              </div>
             </div>
           ) : (
             <Historial records={getRecords(user)} username={user} />
