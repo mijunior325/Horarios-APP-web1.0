@@ -1,30 +1,40 @@
-import { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, useNavigate, Navigate } from 'react-router-dom';
 import * as XLSX from 'xlsx';
 import './App.css';
 import Marcador from './pages/Marcador';
 import LoginForm from './pages/LoginForm';
 import { findUserByEmail } from '../server/services/userService';
-import { AuthProvider } from './context/AuthContext';
-
+import { AuthProvider, useAuth } from './context/AuthContext';
+  
 function AppRoutes() {
   const [loginError, setLoginError] = useState(null);
   const [logoutError, setLogoutError] = useState(null);
   const navigate = useNavigate();
+  const { userData, logout } = useAuth();
+
+  // Navigate to /marcador when userData is set (user logged in)
+  React.useEffect(() => {
+    if (userData) {
+      navigate('/marcador', { replace: true });
+    }
+  }, [userData, navigate]);
 
   const handleLogin = async () => {
     setLoginError(null);
-    navigate('/marcador');
-  }
+    // userData will be set by AuthContext after successful login
+    // Navigation is handled by useEffect
+  };
 
   const handleLogout = () => {
     setLogoutError(null);
-    setUserData(null);
-    navigate('/login');
-  }
+    if (logout) logout();
+    navigate('/login', { replace: true });
+  };
 
   return (
     <Routes initialPath="/login">
+      <Route path="/" element={ userData ? <Navigate to="/marcador" replace /> : <Navigate to="/login" replace />} />
       <Route
         path="/login"
         element={

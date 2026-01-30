@@ -41,3 +41,13 @@ export const findUserById = async (id) => {
   }
 };
 
+export const getAllUsers = async () => {
+  try {
+    const usersSnapshot = await getDocs(collection(db, "users"));
+    const users = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    return users;
+  } catch (error) {
+    console.error("Error getting all users:", error);
+    throw error;
+  }
+};
