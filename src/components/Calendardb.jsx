@@ -34,6 +34,8 @@ function CalendarDb() {
         { headerName: "ID", field: "id", sortable: true, filter: true },
         { headerName: "Usuario", field: "username", sortable: true, filter: true },
         { headerName: "Entrada", field: "PunchIn", sortable: true, filter: true },
+        { headerName: "Entrada lunch", field: "LunchIn", sortable: true, filter: true },
+        { headerName: "Salida lunch", field: "LunchOut", sortable: true, filter: true },
         { headerName: "Salida", field: "PunchOut", sortable: true, filter: true },
     ], []);
 
