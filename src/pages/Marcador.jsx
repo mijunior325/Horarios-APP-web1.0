@@ -154,7 +154,7 @@ export default function Marcador({ allUsers, getRecords }) {
         </div>
       )}
 
-      <button onClick={() => setDisplayCalendar(true)} className="calendar-button">
+      <button onClick={() => setDisplayCalendar(true)} className="calendar-button" style={{ marginTop: 20}}>
         Ver Calendario
       </button>
 

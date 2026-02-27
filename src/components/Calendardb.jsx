@@ -1,10 +1,32 @@
-import  { AllCommunityModules } from '@ag-grid-community/all-modules';
-import { AgGridReact } from '@ag-grid-community/react';
+import { AllCommunityModule, ModuleRegistry, themeQuartz } from 'ag-grid-community'; 
+import { AgGridReact } from 'ag-grid-react'; // React Data Grid Component
 import React, { useState, useEffect, useContext, useMemo } from 'react';
 import { AuthProvider, useAuth } from '../context/AuthContext';
-import { getTimeShifts, getTimeShiftById } from '../../server/services/timeShiftService';
 
-export default function CalendarDb() {
+// Simple Error Boundary
+class ErrorBoundary extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = { hasError: false, error: null };
+    }
+    static getDerivedStateFromError(error) {
+        return { hasError: true, error };
+    }
+    componentDidCatch(error, errorInfo) {
+        console.error("ErrorBoundary caught an error:", error, errorInfo);
+    }
+    render() {
+        if (this.state.hasError) {
+            return <div style={{color: 'red', padding: 20}}>
+                <h2>Something went wrong.</h2>
+                <pre>{this.state.error && this.state.error.toString()}</pre>
+            </div>;
+        }
+        return this.props.children;
+    }
+}
+
+function CalendarDb() {
     const { userData } = useAuth() || {};
     const [records, setRecords] = useState([]);
 
@@ -31,3 +53,32 @@ export default function CalendarDb() {
                 }
 
                 setRecords(shifts);
+            } catch (error) {
+                console.error("Error fetching time shifts:", error);
+            }
+        }
+
+        fetchData();
+    }, [userData]);
+
+    return (
+        <div className="ag-theme-my-dark-theme" style={{ height: 600, width: '100%', marginTop: 40 }}>
+            <AgGridReact
+                modules={[AllCommunityModule]}
+                rowData={records}
+                columnDefs={columnDefs}
+                pagination={true}
+                paginationPageSize={10}
+            />
+        </div>
+    );
+}
+
+// Export CalendarDb wrapped in ErrorBoundary
+export default function CalendarDbWithBoundary(props) {
+    return (
+        <ErrorBoundary>
+            <CalendarDb {...props} />
+        </ErrorBoundary>
+    );
+}

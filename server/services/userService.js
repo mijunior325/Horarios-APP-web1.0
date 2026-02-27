@@ -1,4 +1,4 @@
-import { doc, setDoc, getDoc, Timestamp } from "firebase/firestore";
+import { doc, setDoc, getDoc, getDocs, collection, Timestamp } from "firebase/firestore";
 import { db } from "../config/FIrebaseConfig";
 
 // this is used to find a user by their email
