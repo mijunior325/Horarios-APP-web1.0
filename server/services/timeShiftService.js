@@ -1,7 +1,8 @@
 // Import necessary Firestore functions for document operations and timestamps
 import { doc, setDoc, getDoc, Timestamp, collection, query, where, getDocs  } from "firebase/firestore";
 // Import the Firestore database instance from your config
-import { db } from "../config/FIrebaseConfig";
+import { db } from "../config/FirebaseConfig";
+import { getAllUsers } from "./userService";
 
 
 // Function to create a new time shift document in Firestore
@@ -179,17 +180,24 @@ const getOpenTimeShiftByUser = async (userId) => {
 // Export the getOpenTimeShiftByUser function
 export { getOpenTimeShiftByUser };
 
-// Function to get time shifts filtered by optional name and/or date range
-const getTimeShifts = async ({ name, startDate, endDate }) => {
+// Function to get time shifts filtered by optional userId and/or date range
+const getTimeShifts = async ({ userId, startDate, endDate }) => {
     try {
         // Reference to the 'timeShifts' collection in Firestore
         const timeShiftsRef = collection(db, "timeShifts");
         // Array to hold query filters (where clauses)
         const filters = [];
+        const collectedIDs = new Set();
 
-        // If a name is provided, add a filter for the 'name' field
-        if (name) {
-            filters.push(where("name", "==", name));
+        if (userId) {
+            collectedIDs.add(userId);
+        }  else {
+            collectedIDs.add(getAllUsers());
+        }
+        
+        // If a userId is provided, add a filter for the 'userId' field
+        if (userId) {
+            filters.push(where("userId", "==", userId));
         }
         // If a startDate is provided, add a filter for PunchIn >= startDate
         if (startDate) {

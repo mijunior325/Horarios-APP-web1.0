@@ -1,5 +1,5 @@
-import { doc, setDoc, getDoc, Timestamp } from "firebase/firestore";
-import { db } from "../config/FIrebaseConfig";
+import { doc, setDoc, getDoc, getDocs, collection, Timestamp } from "firebase/firestore";
+import { db } from "../config/FirebaseConfig";
 
 // this is used to find a user by their email
 export const findUserByEmail = async (email) => {
@@ -41,3 +41,13 @@ export const findUserById = async (id) => {
   }
 };
 
+export const getAllUsers = async () => {
+  try {
+    const usersSnapshot = await getDocs(collection(db, "users"));
+    const users = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    return users;
+  } catch (error) {
+    console.error("Error getting all users:", error);
+    throw error;
+  }
+};

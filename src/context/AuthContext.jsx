@@ -1,6 +1,6 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { auth } from '../../server/config/FIrebaseConfig';
+import { auth } from '../../server/config/FirebaseConfig';
 import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
 import { findUserById } from '../../server/services/userService';
 

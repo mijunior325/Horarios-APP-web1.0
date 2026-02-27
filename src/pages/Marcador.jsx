@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
 import Historial from './Historial'
 import { signOut } from 'firebase/auth';
-import { auth } from '../../server/config/FIrebaseConfig';
+import { auth } from '../../server/config/FirebaseConfig';
 import { useNavigate } from 'react-router-dom';
 import { closeTimeShift, createTimeShift, getOpenTimeShiftByUser, openLunchShift, closeLunchShift } from '../../server/services/timeShiftService';
 import { useAuth } from '../context/AuthContext';
+import CalendarDb from '../components/Calendardb';
 
 
 export default function Marcador({ allUsers, getRecords }) {
@@ -12,6 +13,7 @@ export default function Marcador({ allUsers, getRecords }) {
   const [entradaLunch, setEntradaLunch] = useState(null);
   const [salidaLunch, setSalidaLunch] = useState(null);
   const [salidaTurno, setSalidaTurno] = useState(null);
+  const [displayCalendar, setDisplayCalendar] = useState(false);
   const [open, setOpen] = useState(false);
   const [openLunch, setOpenLunch] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
@@ -21,6 +23,11 @@ export default function Marcador({ allUsers, getRecords }) {
 
   // Use id from userData for time shift operations
   const userId = userData?.id || userData?.uid || null;
+
+
+  ////FUNCTIONS//////
+
+  // handle time shift actions
 
   const marcarEntradaTurno = () => {
     console.log("Pressed marcarEntradaTurno");
@@ -78,7 +85,7 @@ export default function Marcador({ allUsers, getRecords }) {
     });
   };
 
-const marcarSalidaTurno = () => {
+  const marcarSalidaTurno = () => {
   if (!userId) return;
   const punchOutDate = new Date();
   getOpenTimeShiftByUser(userId).then(openShift => {
@@ -94,7 +101,7 @@ const marcarSalidaTurno = () => {
       console.error("Error closing time shift:", error);
     });
   });
-};
+  };
 
   const handleLogout = async () => {
     await logout();
@@ -146,6 +153,21 @@ const marcarSalidaTurno = () => {
           )}
         </div>
       )}
+
+      <button onClick={() => setDisplayCalendar(true)} className="calendar-button" style={{ marginTop: 20}}>
+        Ver Calendario
+      </button>
+
+      {displayCalendar && (
+        <div className="calendar-space">
+          <CalendarDb />
+        </div>
+      )}
+      
+
+
     </div>
   )
 }
+
+
