@@ -1,7 +1,7 @@
 // Import necessary Firestore functions for document operations and timestamps
 import { doc, setDoc, getDoc, Timestamp, collection, query, where, getDocs  } from "firebase/firestore";
 // Import the Firestore database instance from your config
-import { db } from "../config/FIrebaseConfig";
+import { db } from "../config/FirebaseConfig";
 import { getAllUsers } from "./userService";
 
 

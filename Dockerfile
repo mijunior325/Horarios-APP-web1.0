@@ -1,5 +1,5 @@
 # Use the official Node.js image as the base image
-FROM node:18-alpine
+FROM node:20-alpine
 
 # Set the working directory in the container
 WORKDIR /app
@@ -9,6 +9,9 @@ COPY package*.json ./
 
 # Install the dependencies
 RUN npm install
+
+# Verify that Vite is installed correctly
+RUN ls -l node_modules/.bin && npx vite --version
 
 # Copy the rest of the application code to the working directory
 COPY . .

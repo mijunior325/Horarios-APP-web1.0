@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import Historial from './Historial'
 import { signOut } from 'firebase/auth';
-import { auth } from '../../server/config/FIrebaseConfig';
+import { auth } from '../../server/config/FirebaseConfig';
 import { useNavigate } from 'react-router-dom';
 import { closeTimeShift, createTimeShift, getOpenTimeShiftByUser, openLunchShift, closeLunchShift } from '../../server/services/timeShiftService';
 import { useAuth } from '../context/AuthContext';

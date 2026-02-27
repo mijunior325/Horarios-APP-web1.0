@@ -1,5 +1,5 @@
 import { doc, setDoc, getDoc, getDocs, collection, Timestamp } from "firebase/firestore";
-import { db } from "../config/FIrebaseConfig";
+import { db } from "../config/FirebaseConfig";
 
 // this is used to find a user by their email
 export const findUserByEmail = async (email) => {
