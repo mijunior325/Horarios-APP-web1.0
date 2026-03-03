@@ -180,42 +180,46 @@ const getOpenTimeShiftByUser = async (userId) => {
 // Export the getOpenTimeShiftByUser function
 export { getOpenTimeShiftByUser };
 
-// Function to get time shifts filtered by optional userId and/or date range
-const getTimeShifts = async ({ userId, startDate, endDate }) => {
+// Function to get time shifts filtered by optional userId, username and/or date range
+const getTimeShifts = async ({ userId, username, startDate, endDate }) => {
     try {
-        // Reference to the 'timeShifts' collection in Firestore
         const timeShiftsRef = collection(db, "timeShifts");
-        // Array to hold query filters (where clauses)
         const filters = [];
-        const collectedIDs = new Set();
 
-        if (userId) {
-            collectedIDs.add(userId);
-        }  else {
-            collectedIDs.add(getAllUsers());
+        // resolve username to userId if necessary
+        if (username && !userId) {
+            const allUsers = await getAllUsers();
+            const match = allUsers.find(u => u.username === username || u.name === username || u.email === username);
+            if (match) {
+                userId = match.id;
+            } else {
+                // no user matches, return empty list
+                return [];
+            }
         }
-        
-        // If a userId is provided, add a filter for the 'userId' field
+
         if (userId) {
             filters.push(where("userId", "==", userId));
         }
-        // If a startDate is provided, add a filter for PunchIn >= startDate
         if (startDate) {
             filters.push(where("PunchIn", ">=", Timestamp.fromDate(new Date(startDate))));
         }
-        // If an endDate is provided, add a filter for PunchIn <= endDate
         if (endDate) {
             filters.push(where("PunchIn", "<=", Timestamp.fromDate(new Date(endDate))));
         }
 
-        // Build the query: if filters exist, apply them; otherwise, query all documents
         const q = filters.length > 0 ? query(timeShiftsRef, ...filters) : query(timeShiftsRef);
-        // Execute the query and get the results
         const querySnapshot = await getDocs(q);
-        // Map the documents to an array of objects with id and data
-        return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const shifts = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+        // attach username from users collection
+        const usersList = await getAllUsers();
+        const usersMap = new Map(usersList.map(u => [u.id, u]));
+        return shifts.map(s => ({
+            ...s,
+            username: usersMap.get(s.userId)?.username || usersMap.get(s.userId)?.name || s.userId
+        }));
     } catch (error) {
-        // Log and rethrow any errors
         console.error("Error getting time shifts:", error);
         throw error;
     }
