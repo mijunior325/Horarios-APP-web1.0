@@ -109,6 +109,7 @@ export default function Marcador({ allUsers, getRecords }) {
     navigate('/login');
   };
 
+
   return (
     <div className="marcador">
       <h1>Marcador de Tiempo de Trabajo</h1>
