@@ -2,6 +2,11 @@ import { doc, setDoc, getDoc, Timestamp, collection, query, where, getDocs } fro
 import { db } from "../config/FirebaseConfig";
 import { getAllUsers } from "./userService";
 
+// Crea un nuevo registro de turno para el userId dado.
+// El turno se marca como abierto con una marca de tiempo PunchIn; todos los
+// demás campos (punch out, tiempos de almuerzo) se inicializan en null.
+// Se usa un ID compuesto de userId y el tiempo actual
+// para reducir la probabilidad de colisiones.
 const createTimeShift = async (userId) => {
     try {
         const timeShiftData = {
@@ -26,6 +31,10 @@ const createTimeShift = async (userId) => {
 
 export { createTimeShift };
 
+// Marca el período de almuerzo como iniciado para un documento de turno.
+// Escribe la hora LunchIn proporcionada (convertida a un Timestamp de Firestore)
+// y activa la bandera lunchOpen. La opción merge asegura que solo
+// actualicemos campos específicos sin sobrescribir los demás.
 const openLunchShift = async (timeShiftId, LunchIn) => {
     try {
         const timeShiftRef = doc(db, "timeShifts", timeShiftId);
@@ -47,6 +56,9 @@ const openLunchShift = async (timeShiftId, LunchIn) => {
 
 export { openLunchShift };
 
+// Completa el período de almuerzo registrando la hora LunchOut y
+// estableciendo lunchOpen en false. También devuelve el documento actualizado
+// para que quienes llamen puedan reflejar el cambio inmediatamente.
 const closeLunchShift = async (timeShiftId, LunchOut) => {
     try {
         const timeShiftRef = doc(db, "timeShifts", timeShiftId);
@@ -68,6 +80,11 @@ const closeLunchShift = async (timeShiftId, LunchOut) => {
 
 export { closeLunchShift };
 
+// Finaliza un turno registrando la hora PunchOut y marcando
+// el turno como cerrado. Antes de hacerlo, realiza comprobaciones de validez:
+//   * el documento debe existir
+//   * el período de almuerzo no debe seguir abierto
+// Estas comprobaciones previenen datos incompletos o estados inconsistentes.
 const closeTimeShift = async (timeShiftId, PunchOut) => {
     try {
         const timeShiftRef = doc(db, "timeShifts", timeShiftId);
@@ -97,6 +114,9 @@ const closeTimeShift = async (timeShiftId, PunchOut) => {
 
 export { closeTimeShift };
 
+// Recupera un único documento de turno por su ID de Firestore.
+// Devuelve null si el documento no existe. Útil para operaciones de edición/visualización
+// donde el ID ya se conoce.
 const getTimeShiftById = async (timeShiftId) => {
     try {
         const timeShiftRef = doc(db, "timeShifts", timeShiftId);
@@ -115,6 +135,10 @@ const getTimeShiftById = async (timeShiftId) => {
 
 export { getTimeShiftById };
 
+// Busca el turno actualmente abierto (aún no cerrado) para un usuario.
+// Se usa durante los flujos de punch-in/punch-out para determinar si el
+// usuario tiene una sesión activa. Consulta open=true y devuelve la
+// primera coincidencia (debería haber solo un turno activo por usuario).
 const getOpenTimeShiftByUser = async (userId) => {
     try {
         const timeShiftsRef = collection(db, "timeShifts");
@@ -139,6 +163,13 @@ const getOpenTimeShiftByUser = async (userId) => {
 
 export { getOpenTimeShiftByUser };
 
+// Recupera una lista de turnos opcionalmente filtrada por ID de usuario,
+// nombre de usuario y/o rango de fechas. Si se suministra un nombre de usuario
+// sin un userId correspondiente, se realiza una búsqueda mediante getAllUsers()
+// para encontrar el ID del usuario coincidente. La consulta se arma
+// automáticamente según los filtros proporcionados. Después de obtener los turnos
+// crudos, enriquecemos cada registro con un nombre de usuario para propósitos
+// de visualización buscando la información del usuario correspondiente.
 const getTimeShifts = async ({ userId, username, startDate, endDate }) => {
     try {
         const timeShiftsRef = collection(db, "timeShifts");
