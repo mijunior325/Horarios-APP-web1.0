@@ -54,7 +54,7 @@ export const getAllUsers = async () => {
 };
 
 // Create a new user in Firebase Auth and Firestore
-export const createUser = async ({ name, email, position, password }) => {
+export const createUser = async ({ name, email, position, dept, password }) => {
   try {
     // Generate a temporary password if not provided
     const tempPassword = password || Math.random().toString(36).slice(-10);
@@ -62,17 +62,23 @@ export const createUser = async ({ name, email, position, password }) => {
     const userCredential = await createUserWithEmailAndPassword(auth, email, tempPassword);
     const uid = userCredential.user.uid;
 
-    const role = (position || "").toLowerCase() === "admin" ? "admin" : "user";
+    const isAdminPosition = typeof position === "string" && /admin/i.test(position);
+    const role = isAdminPosition ? "admin" : "user";
 
     await setDoc(doc(db, "users", uid), {
+      id: uid,
       name,
       email,
       position,
+      dept,
       role,
       createdAt: Timestamp.now(),
     });
 
-    return { uid, password: tempPassword };
+    console.log("New user saved to Firestore (users/" + uid + ")");
+
+    // Return the generated Firebase UID, similar to how Firebase generates IDs
+    return { id: uid, password: tempPassword };
   } catch (error) {
     console.error("Error creating user:", error);
     throw error;

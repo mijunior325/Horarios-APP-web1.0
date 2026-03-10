@@ -32,6 +32,7 @@ function CalendarDb() {
     const { userData } = useAuth() || {};
     const [records, setRecords] = useState([]);
     const [users, setUsers] = useState([]);
+    const [usersError, setUsersError] = useState(null);
     const [selectedUserId, setSelectedUserId] = useState("");
 
     const columnDefs = useMemo(() => [
@@ -46,12 +47,15 @@ function CalendarDb() {
     useEffect(() => {
         // populate user list once if admin
         async function initUsers() {
-            if (userData && userData.role === "admin") {
+            setUsersError(null);
+            const isAdmin = userData && (userData.role === "admin" || /admin/i.test(userData.position || ""));
+            if (userData && isAdmin) {
                 try {
                     const all = await getAllUsers();
                     setUsers(all);
                 } catch (e) {
                     console.error("Failed to load users", e);
+                    setUsersError(e?.message || "Error al cargar usuarios");
                 }
             } else if (userData) {
                 setUsers([userData]);
@@ -97,20 +101,26 @@ function CalendarDb() {
 
     return (
         <>
-            {userData && userData.role === "admin" && users.length > 0 && (
+            {userData && (userData.role === "admin" || /admin/i.test(userData.position || "")) && (
                 <div style={{ marginBottom: 12 }}>
                     <label>Usuario a mostrar: </label>
-                    <select
-                        value={selectedUserId}
-                        onChange={(e) => setSelectedUserId(e.target.value)}
-                    >
-                        <option value="">Todos</option>
-                        {users.map((u) => (
-                            <option key={u.id} value={u.id}>
-                                {u.username || u.name || u.email || u.id}
-                            </option>
-                        ))}
-                    </select>
+                    {usersError ? (
+                        <span style={{ color: 'red', marginLeft: 8 }}>{usersError}</span>
+                    ) : users.length === 0 ? (
+                        <span style={{ marginLeft: 8, fontStyle: 'italic' }}>No se encontraron usuarios</span>
+                    ) : (
+                        <select
+                            value={selectedUserId}
+                            onChange={(e) => setSelectedUserId(e.target.value)}
+                        >
+                            <option value="">Todos</option>
+                            {users.map((u) => (
+                                <option key={u.id} value={u.id}>
+                                    {u.username || u.name || u.email || u.id}
+                                </option>
+                            ))}
+                        </select>
+                    )}
                 </div>
             )}
             <div className="ag-theme-my-dark-theme" style={{ height: 600, width: '100%', marginTop: 40 }}>

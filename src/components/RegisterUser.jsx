@@ -10,6 +10,8 @@ export default function RegisterUser() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [position, setPosition] = useState('');
+  const [department, setDepartment] = useState('');
+  const [newUserPassword, setNewUserPassword] = useState('');
   const [adminPassword, setAdminPassword] = useState('');
   const [status, setStatus] = useState(null);
   const [error, setError] = useState(null);
@@ -24,6 +26,8 @@ export default function RegisterUser() {
     setName('');
     setEmail('');
     setPosition('');
+    setDepartment('');
+    setNewUserPassword('');
   };
 
   const handleSubmit = async (e) => {
@@ -31,7 +35,7 @@ export default function RegisterUser() {
     setStatus(null);
     setError(null);
 
-    if (!name.trim() || !email.trim() || !position.trim()) {
+    if (!name.trim() || !email.trim() || !position.trim() || !department.trim() || !newUserPassword.trim()) {
       setError('Por favor completa todos los campos.');
       return;
     }
@@ -45,7 +49,13 @@ export default function RegisterUser() {
 
     setLoading(true);
     try {
-      const created = await createUser({ name: name.trim(), email: email.trim(), position: position.trim() });
+      const created = await createUser({
+        name: name.trim(),
+        email: email.trim(),
+        position: position.trim(),
+        dept: department.trim(),
+        password: newUserPassword.trim(),
+      });
 
       // After creating a user, Firebase Auth will sign in as that new user.
       // Re-authenticate as the admin so the admin session remains active.
@@ -61,7 +71,7 @@ export default function RegisterUser() {
       }
 
       setStatus(
-        `Usuario creado con éxito. Contraseña temporal: ${created.password}. Pídeles que la cambien al iniciar sesión.`
+        `Usuario creado con éxito (ID: ${created.id}). Contraseña: ${created.password}. Pídeles que la cambien al iniciar sesión.`
       );
       clearForm();
     } catch (err) {
@@ -126,6 +136,20 @@ export default function RegisterUser() {
               value={position}
               placeholder="Posición"
               onChange={(e) => setPosition(e.target.value)}
+              required
+            />
+            <input
+              type="text"
+              value={department}
+              placeholder="Departamento"
+              onChange={(e) => setDepartment(e.target.value)}
+              required
+            />
+            <input
+              type="password"
+              value={newUserPassword}
+              placeholder="Contraseña temporal del nuevo usuario"
+              onChange={(e) => setNewUserPassword(e.target.value)}
               required
             />
             <input
