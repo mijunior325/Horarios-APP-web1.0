@@ -129,6 +129,10 @@ export default function Marcador({ allUsers, getRecords }) {
     navigate('/login');
   };
 
+  const handleShowCalendar = () => { 
+    setDisplayCalendar(!displayCalendar);
+  };
+
 
   return (
     <div className="flex flex-col gap-10 justify-start min-h-screen bg-gray-50">
@@ -190,17 +194,17 @@ export default function Marcador({ allUsers, getRecords }) {
         {/* Registros Section */}
         <div className="flex flex-col gap-10 w-full">
            <p className="text-3xl text-black font-bold">Registros de Hoy</p>
-           <div className="w-full flex lg:flex-row md:flex-col flex-col gap-4 justify-center items-center">
+           <div className='flex lg:flex-row md:flex-col flex-col gap-6 justify-start items-start'>
               <InfoCard label="Entrada" description={entradaTurno ? entradaTurno.toLocaleString() : 'No marcado'}/>
               <InfoCard label="Lunch In" description={entradaLunch ? entradaLunch.toLocaleString() : 'No marcado'}/>
               <InfoCard label="Lunch Out" description={salidaLunch ? salidaLunch.toLocaleString() : 'No marcado'}/>
               <InfoCard label="Salida" description={salidaTurno ? salidaTurno.toLocaleString() : 'No marcado'}/>
            </div>
         </div>
-  
-        <button onClick={() => setDisplayCalendar(true)} className="calendar-button" style={{ marginTop: 20}}>
-          Ver Calendario
-        </button>
+
+        <div className='flex items-center justify-center font-bold text-white bg-blue-500 shadow-lg hover:bg-blue-700 p-2 rounded-lg' onClick={handleShowCalendar}>
+            Ver Calendario
+        </div>
 
         {displayCalendar && (
           <div className="calendar-space">

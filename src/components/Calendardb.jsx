@@ -102,7 +102,7 @@ function CalendarDb() {
     return (
         <>
             {userData && (userData.role === "admin" || /admin/i.test(userData.position || "")) && (
-                <div style={{ marginBottom: 12 }}>
+                <div className='mb-12 flex items-center gap-4'>
                     <label>Usuario a mostrar: </label>
                     {usersError ? (
                         <span style={{ color: 'red', marginLeft: 8 }}>{usersError}</span>
@@ -120,17 +120,38 @@ function CalendarDb() {
                                 </option>
                             ))}
                         </select>
-                    )}
+                    )} 
                 </div>
             )}
-            <div className="ag-theme-my-dark-theme" style={{ height: 600, width: '100%', marginTop: 40 }}>
-                <AgGridReact
-                    modules={[AllCommunityModule]}
-                    rowData={records}
-                    columnDefs={columnDefs}
-                    pagination={true}
-                    paginationPageSize={10}
-                />
+            <div className=" flex flex-col gap-20 w-auto lg:h-auto h-auto border border-gray-300 rounded-lg shadow-lg">
+                <div className="w-full overflow-x-auto sm:overflow-x-visible">
+                <table className="lg:table-auto md:table-auto table-auto w-full text-left">
+                    <thead>
+                        <tr>
+                            {/* <th className="px-4 py-2 bg-gray-200">ID</th> */}
+                            <th className="px-4 py-4 bg-gray-200">Usuario</th>
+                            <th className="px-4 py-4 bg-gray-200">Entrada</th>
+                            <th className="px-4 py-4 bg-gray-200">Entrada lunch</th>
+                            <th className="px-4 py-4 bg-gray-200">Salida lunch</th>
+                            <th className="px-4 py-4 bg-gray-200">Salida</th>
+                            <th className="px-4 py-4 bg-gray-200">Fecha</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {records.map((record) => (
+                            <tr key={record.id}>
+                                {/* <td className="border-b border-gray-200 px-4 py-2">{record.id}</td> */}
+                                <td className="border-b border-gray-200 px-4 py-2 font-bold">{record.username}</td>
+                                <td className="border-b border-gray-200 px-4 py-2">{record.PunchIn ? new Date(record.PunchIn).toLocaleTimeString() : "-"}</td>
+                                <td className="border-b border-gray-200 px-4 py-2">{record.LunchIn ? new Date(record.LunchIn).toLocaleTimeString() : "-"}</td>
+                                <td className="border-b border-gray-200 px-4 py-2">{record.LunchOut ? new Date(record.LunchOut).toLocaleTimeString() : "-"}</td>
+                                <td className="border-b border-gray-200 px-4 py-2">{record.PunchOut ? new Date(record.PunchOut).toLocaleTimeString() : "-"}</td>
+                                <td className="border-b border-gray-200 px-4 py-2">{record.PunchIn ? new Date(record.PunchIn).toLocaleDateString() : "-"}</td>
+                            </tr>
+                        ))}
+                    </tbody>    
+                </table>
+                </div>
             </div>
         </>
     );
