@@ -7,7 +7,6 @@ import { closeTimeShift, createTimeShift, getOpenTimeShiftByUser, openLunchShift
 import { useAuth } from '../context/AuthContext';
 import CalendarDb from '../components/Calendardb';
 import RegisterUser from '../components/RegisterUser';
-import { MdOutlineLogout } from "react-icons/md";
 
 
 
@@ -16,6 +15,8 @@ import { FcAssistant } from "react-icons/fc";
 import { MdOutlinePunchClock, MdOutlineLunchDining } from "react-icons/md";
 import Button from "../components/Button"
 import InfoCard from '../components/InfoCard';
+import toast from "react-hot-toast"
+import { MdOutlineLogout } from "react-icons/md";
 
 
 export default function Marcador({ allUsers, getRecords }) {
@@ -126,6 +127,7 @@ export default function Marcador({ allUsers, getRecords }) {
   const handleLogout = async () => {
     await logout();
     console.log("User signed out successfully.");
+    toast.error("Sesión cerrada. Hasta luego!");
     navigate('/login');
   };
 
