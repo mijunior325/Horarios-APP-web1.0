@@ -36,7 +36,7 @@ export default function LoginForm({ onLogin, error, setError }) {
   };
 
   return (
-    <div className = "flex flex-col justify-center items-center border-2 border-gray-300 bg-white rounded-lg p-8 py-20 shadow-xl gap-8 w-1/4" >
+    <div className = "flex flex-col justify-center items-center border lg:border-gray-300 md:border-gray-300 border-white bg-white rounded-lg lg:p-8 sm:p-8 lg:py-20 shadow-xl gap-8 lg:w-1/4 md:w-1/2 md:h-auto lg:h-auto h-full w-full px-8" >
         <img className="w-1/2"src={LogoCompany} />
         <span className='text-4xl font-bold'>Iniciar Sesión</span>
         <Input
