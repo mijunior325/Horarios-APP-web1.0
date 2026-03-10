@@ -1,5 +1,6 @@
 import { doc, setDoc, getDoc, getDocs, collection, Timestamp } from "firebase/firestore";
-import { db } from "../config/FirebaseConfig";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth, db } from "../config/FirebaseConfig";
 
 // this is used to find a user by their email
 export const findUserByEmail = async (email) => {
@@ -48,6 +49,32 @@ export const getAllUsers = async () => {
     return users;
   } catch (error) {
     console.error("Error getting all users:", error);
+    throw error;
+  }
+};
+
+// Create a new user in Firebase Auth and Firestore
+export const createUser = async ({ name, email, position, password }) => {
+  try {
+    // Generate a temporary password if not provided
+    const tempPassword = password || Math.random().toString(36).slice(-10);
+
+    const userCredential = await createUserWithEmailAndPassword(auth, email, tempPassword);
+    const uid = userCredential.user.uid;
+
+    const role = (position || "").toLowerCase() === "admin" ? "admin" : "user";
+
+    await setDoc(doc(db, "users", uid), {
+      name,
+      email,
+      position,
+      role,
+      createdAt: Timestamp.now(),
+    });
+
+    return { uid, password: tempPassword };
+  } catch (error) {
+    console.error("Error creating user:", error);
     throw error;
   }
 };
