@@ -15,6 +15,7 @@ import { MdOutlineLogout } from "react-icons/md";
 import { FcAssistant } from "react-icons/fc";
 import { MdOutlinePunchClock, MdOutlineLunchDining } from "react-icons/md";
 import Button from "../components/Button"
+import InfoCard from '../components/InfoCard';
 
 
 export default function Marcador({ allUsers, getRecords }) {
@@ -132,7 +133,7 @@ export default function Marcador({ allUsers, getRecords }) {
   return (
     <div className="flex flex-col gap-10 justify-start min-h-screen bg-gray-50">
       {/* Top Nav Bar */}
-      <div className="w-full flex flex-row justify-between p-8 px-100 bg-white shadow-md items-center">
+      <div className="w-full flex flex-row justify-between p-8 xl:px-30 md:px-8 bg-white shadow-md items-center">
 
         {/* Profile View */}
         <div className="flex items-center gap-4">
@@ -157,7 +158,7 @@ export default function Marcador({ allUsers, getRecords }) {
       </div>
       
     {/* Body */}
-      <div className="flex flex-col p-8 px-100 gap-10">
+      <div className="flex flex-col p-8 xl:px-30 md:px-8 sm:px-8 px-100 gap-10">
         {/* section top text */}
         <div className='flex flex-row justify-beteen w-full'>
           <div className="flex flex-col gap-2">
@@ -178,7 +179,7 @@ export default function Marcador({ allUsers, getRecords }) {
             </div>
             {/* Button Section Marcador */}
 
-          <div className="w-full flex flex-row gap-4 justify-center items-center">
+          <div className="w-full flex lg:flex-row md:flex-col sm:flex-col gap-4 justify-center items-center">
             <Button label="Entrar al Turno" onClick={marcarEntradaTurno} disabled={entradaTurno !== null} className="bg-green-500 hover:bg-green-700" icon={<MdOutlinePunchClock size={42}/>}/>
             <Button label="Entrar al Lunch" onClick={marcarEntradaLunch} disabled={openLunch === true || open === false} className="bg-amber-500 hover:bg-amber-700" icon={<MdOutlineLunchDining size={42}/>} />
             <Button label="Salir del Lunch" onClick={marcarSalidaLunch} disabled={openLunch === false || open === false} className="bg-amber-500 hover:bg-amber-700" icon={<MdOutlineLunchDining size={42}/>}/>
@@ -187,15 +188,17 @@ export default function Marcador({ allUsers, getRecords }) {
           </div>
         </div>
 
-
-        <div className="registros">
-          <h2>Registros de Hoy</h2>
-          <p>Entrada al Turno: {entradaTurno ? entradaTurno.toLocaleString() : 'No marcado'}</p>
-          <p>Entrada al Lunch: {entradaLunch ? entradaLunch.toLocaleString() : 'No marcado'}</p>
-          <p>Salida del Lunch: {salidaLunch ? salidaLunch.toLocaleString() : 'No marcado'}</p>
-          <p>Salida de Turno: {salidaTurno ? salidaTurno.toLocaleString() : 'No marcado'}</p>
+        {/* Registros Section */}
+        <div className="flex flex-col gap-10 w-full">
+           <p className="text-3xl text-black font-bold">Registros de Hoy</p>
+           <div className='flex lg:flex-row md:flex-col sm:flex-col gap-6 justify-start items-start'>
+              <InfoCard label="Entrada" description={entradaTurno ? entradaTurno.toLocaleString() : 'No marcado'}/>
+              <InfoCard label="Lunch In" description={entradaLunch ? entradaLunch.toLocaleString() : 'No marcado'}/>
+              <InfoCard label="Lunch Out" description={salidaLunch ? salidaLunch.toLocaleString() : 'No marcado'}/>
+              <InfoCard label="Salida" description={salidaTurno ? salidaTurno.toLocaleString() : 'No marcado'}/>
+           </div>
         </div>
-
+  
         <button onClick={() => setDisplayCalendar(true)} className="calendar-button" style={{ marginTop: 20}}>
           Ver Calendario
         </button>
