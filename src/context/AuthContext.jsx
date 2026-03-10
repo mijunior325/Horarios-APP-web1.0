@@ -3,6 +3,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { auth } from '../../server/config/FirebaseConfig';
 import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
 import { findUserById } from '../../server/services/userService';
+import toast from "react-hot-toast";
 
 // Create the AuthContext
 const AuthContext = createContext();
@@ -39,8 +40,10 @@ export function AuthProvider({ children }) {
 		try {
 			const userCredential = await signInWithEmailAndPassword(auth, email, password);
 			setUser(userCredential.user);
+			// toast.success("Sesión iniciada correctamente!");
 			return userCredential.user;
 		} catch (err) {
+			// toast.error("Error al iniciar sesión:", err);
 			setError(err.message);
 			throw err;
 		}

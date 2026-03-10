@@ -7,6 +7,15 @@ import { closeTimeShift, createTimeShift, getOpenTimeShiftByUser, openLunchShift
 import { useAuth } from '../context/AuthContext';
 import CalendarDb from '../components/Calendardb';
 import RegisterUser from '../components/RegisterUser';
+import { MdOutlineLogout } from "react-icons/md";
+
+
+
+//UI Imports
+import { FcAssistant } from "react-icons/fc";
+import { MdOutlinePunchClock, MdOutlineLunchDining } from "react-icons/md";
+import Button from "../components/Button"
+
 
 export default function Marcador({ allUsers, getRecords }) {
   const [entradaTurno, setEntradaTurno] = useState(null);
@@ -26,6 +35,16 @@ export default function Marcador({ allUsers, getRecords }) {
 
 
   ////FUNCTIONS//////
+
+    const [time, setTime] = useState(new Date());
+
+    React.useEffect(() => {
+      const timer = setInterval(() => {
+        setTime(new Date());
+      }, 1000);
+      return () => clearInterval(timer);
+    }, []);
+
 
   // handle time shift actions
 
@@ -111,66 +130,87 @@ export default function Marcador({ allUsers, getRecords }) {
 
 
   return (
-    <div className="marcador" style={{ position: 'relative' }}>
-      <h1>Marcador de Tiempo de Trabajo</h1>
-      <p>Bienvenido, { userData?.name || `Usuario`}</p>
+    <div className="flex flex-col gap-10 justify-start min-h-screen bg-gray-50">
+      {/* Top Nav Bar */}
+      <div className="w-full flex flex-row justify-between p-8 px-100 bg-white shadow-md items-center">
 
-      {userData?.role === 'admin' && <RegisterUser />}
+        {/* Profile View */}
+        <div className="flex items-center gap-4">
 
-      <button onClick={handleLogout} className="logout">Cerrar Sesión</button>
-      <div className="botones">
-        <button onClick={marcarEntradaTurno} disabled={entradaTurno !== null}>
-          Entrada al Turno
-        </button>
-        <button onClick={marcarEntradaLunch} disabled={openLunch === true || open === false}>
-          Entrada al Lunch
-        </button>
-        <button onClick={marcarSalidaLunch} disabled={openLunch === false || open === false}>
-          Salida del Lunch
-        </button>
-        <button onClick={marcarSalidaTurno} disabled={open === false || openLunch === true}>
-          Salida de Turno
-        </button>
-      </div>
-      <div className="registros">
-        <h2>Registros de Hoy</h2>
-        <p>Entrada al Turno: {entradaTurno ? entradaTurno.toLocaleString() : 'No marcado'}</p>
-        <p>Entrada al Lunch: {entradaLunch ? entradaLunch.toLocaleString() : 'No marcado'}</p>
-        <p>Salida del Lunch: {salidaLunch ? salidaLunch.toLocaleString() : 'No marcado'}</p>
-        <p>Salida de Turno: {salidaTurno ? salidaTurno.toLocaleString() : 'No marcado'}</p>
-      </div>
-      <button onClick={() => setShowHistory(!showHistory)}>
-        {showHistory ? 'Ocultar Historial' : 'Ver Historial'}
-      </button>
-      {showHistory && (
-        <div className="historial">
-          {userData?.role === 'admin' ? (
-            <div>
-              <h3>Seleccionar Usuario</h3>
-              <select value={selectedUser} onChange={(e) => setSelectedUser(e.target.value)}>
-                {allUsers().map(u => <option key={u.id || u.email} value={u.id || u.email}>{u.name || u.email}</option>)}
-              </select>
-              <Historial records={getRecords(selectedUser)} username={selectedUser} />
-            </div>
-          ) : (
-            <Historial records={getRecords(userId)} username={userData?.name || `Usuario`} />
-          )}
+          {/* Icon */}
+          <FcAssistant size={48} />
+
+          {/* User Info Text */}
+          <div className='flex flex-col gap-1'>
+            <p className='font-bold text-xl text-gray-800'>{ userData?.name || `Usuario`}</p>
+            <p className='text-sm font-bold flex justify-start items-start text-blue-500'>{ userData?.role === 'admin' ? 'Administrador' : 'Empleado'}</p>
+          </div>
         </div>
-      )}
 
-      <button onClick={() => setDisplayCalendar(true)} className="calendar-button" style={{ marginTop: 20}}>
-        Ver Calendario
-      </button>
+        {/* Logout Button */}
+        <div className= "flex flex-row gap-2 item-center justify-center text-red-500 bg-white border border-red-500 font-bold shadow-lg rounded-xl p-4 cursor-pointer hover:bg-red-500 hover:text-white transition-colors: duration-200" onClick={handleLogout}>
+          <MdOutlineLogout size={24} />
+          {/* <p>Cerrar Sesión</p> */}
 
-      {displayCalendar && (
-        <div className="calendar-space">
-          <CalendarDb />
+          {/* {userData?.role === 'admin' && <RegisterUser />} */}
         </div>
-      )}
+      </div>
       
+    {/* Body */}
+      <div className="flex flex-col p-8 px-100 gap-10">
+        {/* section top text */}
+        <div className='flex flex-row justify-beteen w-full'>
+          <div className="flex flex-col gap-2">
+            <p className="text-4xl text-black font-bold">Bienvenido!</p>
+            <p className="text-2xl text-gray-500">{time.toLocaleTimeString()}</p>
+            <p className="text-2xl text-gray-500">{time.toDateString()}</p>
+          </div>
+
+        </div>
+
+        {/* Main marcador */}
+        <div className ="flex flex-col border border-black w-full bg-white rounded-xl shadow-lg p-8 gap-6">
+
+            {/* Text Info Marcador */}
+            <div className='flex flex-col items-start justify-start gap-2'>
+              <p className="text-3xl text-black font-bold">Marcador</p>
+              <p className="text-xl text-gray-400">Aquí puede marcar sus tiempos</p>
+            </div>
+            {/* Button Section Marcador */}
+
+          <div className="w-full flex flex-row gap-4 justify-center items-center">
+            <Button label="Entrar al Turno" onClick={marcarEntradaTurno} disabled={entradaTurno !== null} className="bg-green-500 hover:bg-green-700" icon={<MdOutlinePunchClock size={42}/>}/>
+            <Button label="Entrar al Lunch" onClick={marcarEntradaLunch} disabled={openLunch === true || open === false} className="bg-amber-500 hover:bg-amber-700" icon={<MdOutlineLunchDining size={42}/>} />
+            <Button label="Salir del Lunch" onClick={marcarSalidaLunch} disabled={openLunch === false || open === false} className="bg-amber-500 hover:bg-amber-700" icon={<MdOutlineLunchDining size={42}/>}/>
+            <Button label="Salir del Turno" onClick={marcarSalidaTurno} disabled={open === false || openLunch === true} className="bg-red-500 hover:bg-red-700" icon={<MdOutlinePunchClock size={42}/>} />
+          
+          </div>
+        </div>
 
 
+        <div className="registros">
+          <h2>Registros de Hoy</h2>
+          <p>Entrada al Turno: {entradaTurno ? entradaTurno.toLocaleString() : 'No marcado'}</p>
+          <p>Entrada al Lunch: {entradaLunch ? entradaLunch.toLocaleString() : 'No marcado'}</p>
+          <p>Salida del Lunch: {salidaLunch ? salidaLunch.toLocaleString() : 'No marcado'}</p>
+          <p>Salida de Turno: {salidaTurno ? salidaTurno.toLocaleString() : 'No marcado'}</p>
+        </div>
+
+        <button onClick={() => setDisplayCalendar(true)} className="calendar-button" style={{ marginTop: 20}}>
+          Ver Calendario
+        </button>
+
+        {displayCalendar && (
+          <div className="calendar-space">
+            <CalendarDb />
+          </div>
+        )}
+
+
+      </div>
+    
     </div>
+    
   )
 }
 

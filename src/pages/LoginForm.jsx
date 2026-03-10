@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../server/config/FirebaseConfig';
 import { findUserByEmail, findUserById } from '../../server/services/userService';
+import Input from '../components/Input';
+import LogoCompany from "../assets/LogoCompanySquare.jpg"
+import toast from "react-hot-toast";
 
 
 
@@ -18,10 +21,10 @@ export default function LoginForm({ onLogin, error, setError }) {
       const userData = await findUserById(user.uid);
       console.log("User data:", userData);
       
-
       onLogin(userData);
+      toast.success("Sesión iniciada con exito!");
     } catch (error) {
-      console.error("Error signing in:", error);
+      toast.error("Error signing in:", error);
       if (setError) setError("Correo o contraseña incorrectos.");
     }
   };
@@ -33,24 +36,25 @@ export default function LoginForm({ onLogin, error, setError }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="form">
-      <h2>Iniciar Sesión</h2>
-      <input
-        type="email"
-        placeholder="Correo Electrónico"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
-      />
-      <input
-        type="password"
-        placeholder="Contraseña"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
-      />
-      <button type="submit">Iniciar Sesión</button>
-      {error && <p className="error">{error}</p>}
-    </form>
+    <div className = "flex flex-col justify-center items-center border-2 border-gray-300 bg-white rounded-lg p-8 py-20 shadow-xl gap-8 w-1/4" >
+        <img className="w-1/2"src={LogoCompany} />
+        <span className='text-4xl font-bold'>Iniciar Sesión</span>
+        <Input
+          type="email"
+          placeholder="Correo Electrónico"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <Input
+          type="password"
+          placeholder="Contraseña"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <button className='bg-blue-950 text-white font-bold text-xl p-4 w-full rounded-lg' onClick={handleSubmit}>Iniciar Sesión</button>
+        {error && <p className="error">{error}</p>}
+    </div>
   );
 }

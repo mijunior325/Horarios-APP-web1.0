@@ -6,6 +6,8 @@ import Marcador from './pages/Marcador';
 import LoginForm from './pages/LoginForm';
 import { findUserByEmail } from '../server/services/userService';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { Toaster } from "react-hot-toast"
+import ImageBackground from "./assets/LoginBackground.png"
   
 function AppRoutes() {
   const [loginError, setLoginError] = useState(null);
@@ -38,8 +40,8 @@ function AppRoutes() {
       <Route
         path="/login"
         element={
-          <div className="app">
-            <h1>Marcador de Tiempo de Trabajo</h1>
+          <div className="flex items-center justify-center h-screen w-screen bg-white">
+            {/* <h1>Marcador de Tiempo de Trabajo</h1> */}
             <LoginForm onLogin={handleLogin} error={loginError} setError={setLoginError} />
           </div>
         }
@@ -52,6 +54,7 @@ export default function App() {
   return (
     <AuthProvider>
       <Router>
+        <Toaster />
         <AppRoutes />
       </Router>
     </AuthProvider>
