@@ -4,6 +4,27 @@ import { useAuth } from '../context/AuthContext';
 import { auth } from '../../server/config/FirebaseConfig';
 import { createUser } from '../../server/services/userService';
 
+// Componente que permite a un admin crear un nuevo usuario en Firebase Auth y Firestore.
+//
+// Comportamiento:
+// - Solo se renderiza para usuarios con role === 'admin'.
+// - Muestra un botón que abre/cierra el formulario de registro.
+// - Valida los campos obligatorios y pide la contraseña del admin para confirmar la acción.
+// - Llama a createUser() de userService para:
+//     1) crear un usuario en Firebase Auth con la contraseña ingresada.
+//     2) guardar el perfil del usuario en Firestore bajo /users/{uid}.
+// - Después de crear el usuario, vuelve a autenticar al admin para mantener la sesión activa.
+//
+// Datos guardados en Firestore:
+//  {
+//    id: <uid>,
+//    name: ...,        // nombre completo
+//    email: ...,       // correo de login
+//    position: ...,    // posición (ej. "Desarrollador")
+//    dept: ...,        // departamento (almacenado como `dept`)
+//    role: ...         // derivado de position ("admin" si position contiene "admin")
+//  }
+
 export default function RegisterUser() {
   const { userData } = useAuth();
   const [showForm, setShowForm] = useState(false);
@@ -22,6 +43,7 @@ export default function RegisterUser() {
     return null;
   }
 
+  // Limpia todos los campos del formulario (vuelve a valores iniciales)
   const clearForm = () => {
     setName('');
     setEmail('');
@@ -30,16 +52,22 @@ export default function RegisterUser() {
     setNewUserPassword('');
   };
 
+  // Maneja el envío del formulario de registro
+  // 1) Valida que todos los campos estén completos
+  // 2) Llama a createUser() para crear el usuario en Auth + Firestore
+  // 3) Vuelve a autenticar al admin para no perder la sesión de administrador
   const handleSubmit = async (e) => {
     e.preventDefault();
     setStatus(null);
     setError(null);
 
+    // Validación simple de campos requeridos
     if (!name.trim() || !email.trim() || !position.trim() || !department.trim() || !newUserPassword.trim()) {
       setError('Por favor completa todos los campos.');
       return;
     }
 
+    // La contraseña del admin se usa para volver a autenticarse después de crear el nuevo usuario
     if (!adminPassword.trim()) {
       setError('Por favor ingresa tu contraseña para confirmar la acción.');
       return;
@@ -49,6 +77,7 @@ export default function RegisterUser() {
 
     setLoading(true);
     try {
+      // Crea el nuevo usuario en Firebase (Auth + Firestore)
       const created = await createUser({
         name: name.trim(),
         email: email.trim(),
@@ -57,8 +86,8 @@ export default function RegisterUser() {
         password: newUserPassword.trim(),
       });
 
-      // After creating a user, Firebase Auth will sign in as that new user.
-      // Re-authenticate as the admin so the admin session remains active.
+      // Firebase Auth automáticamente inicia sesión con el nuevo usuario.
+      // Re-autenticar al admin para mantener la sesión continua.
       try {
         await signInWithEmailAndPassword(auth, adminEmail, adminPassword.trim());
       } catch (reauthErr) {
