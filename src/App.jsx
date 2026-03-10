@@ -44,8 +44,7 @@ function AppRoutes() {
           </div>
         }
       />
-      <Route path="/marcador" element={<Marcador onLogout={handleLogout} />} />
-    </Routes>
+      <Route path="/marcador" element={<Marcador onLogout={handleLogout} />} />    </Routes>
   );
 }
 

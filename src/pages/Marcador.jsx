@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { closeTimeShift, createTimeShift, getOpenTimeShiftByUser, openLunchShift, closeLunchShift } from '../../server/services/timeShiftService';
 import { useAuth } from '../context/AuthContext';
 import CalendarDb from '../components/Calendardb';
-
+import RegisterUser from '../components/RegisterUser';
 
 export default function Marcador({ allUsers, getRecords }) {
   const [entradaTurno, setEntradaTurno] = useState(null);
@@ -111,9 +111,12 @@ export default function Marcador({ allUsers, getRecords }) {
 
 
   return (
-    <div className="marcador">
+    <div className="marcador" style={{ position: 'relative' }}>
       <h1>Marcador de Tiempo de Trabajo</h1>
       <p>Bienvenido, { userData?.name || `Usuario`}</p>
+
+      {userData?.role === 'admin' && <RegisterUser />}
+
       <button onClick={handleLogout} className="logout">Cerrar Sesión</button>
       <div className="botones">
         <button onClick={marcarEntradaTurno} disabled={entradaTurno !== null}>
