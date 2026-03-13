@@ -154,12 +154,14 @@ export default function Marcador({ allUsers, getRecords }) {
           </div>
         </div>
 
-        {/* Logout Button */}
-        <div className= "flex flex-row gap-2 item-center justify-center text-red-500 bg-white border border-red-500 font-bold shadow-lg rounded-xl p-4 cursor-pointer hover:bg-red-500 hover:text-white transition-colors: duration-200" onClick={handleLogout}>
-          <MdOutlineLogout size={24} />
-          {/* <p>Cerrar Sesión</p> */}
+        {/* Right side navbar */}
+        <div className="flex flex-row items-center gap-4">
+            {userData?.role === 'admin' && <RegisterUser />}
 
-          {/* {userData?.role === 'admin' && <RegisterUser />} */}
+          {/* Logout Button */}
+          <div className= "flex flex-row gap-2 item-center justify-center text-red-500 bg-white border border-red-500 font-bold shadow-lg rounded-xl p-4 cursor-pointer hover:bg-red-500 hover:text-white transition-colors: duration-200" onClick={handleLogout}>
+            <MdOutlineLogout size={24} />
+          </div>
         </div>
       </div>
       
