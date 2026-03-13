@@ -51,7 +51,7 @@ export default function RegisterUser() {
   // Designs for open and close form
 
   const openFormDesign = " z-10 p-2 rounded-lg text-blue-500 bg-white border border-blue-500 font-bold shadow-lg rounded-xl p-4 cursor-pointer hover:bg-blue-500 hover:text-white transition-colors: duration-200";
-  const closeFormDesign = "absolute top-1/4 right-1/8 w-3/4 lg:w-1/4 z-10 p-2 rounded-lg text-white bg-blue-500 shadow-lg transition-colors duration-200";
+  const closeFormDesign = "absolute lg:top-9 lg:right-50 md:right-25 md:top-9 lg:w-1/4 md:w-1/2 w-full right-0 z-10 p-2 top-32 rounded-lg text-white bg-blue-500 shadow-lg";
 
   // Only admins can see / use this component
   if (userData?.role !== 'admin') {
@@ -155,7 +155,7 @@ export default function RegisterUser() {
 
       {showForm && (
         <div
-          className="flex flex-col gap-2.5 mt-3 p-3 border rounded-lg bg-white shadow"
+          className="flex flex-col gap-2.5 mt-3 p-2 border rounded-lg bg-white shadow"
         >
 
           
@@ -205,9 +205,19 @@ export default function RegisterUser() {
               required
               className="text-black"
             />
+
+             <p className="text-black font-bold mt-15">Contraseña de Admin</p>
+            <Input
+                type="password"
+                value={adminPassword}
+                placeholder="Contraseña del administrador para confirmar"
+                onChange={(e) => setAdminPassword(e.target.value)}
+                required
+                className="text-black mb-5"
+              />
           </div>
 
-            {/* Posiblemente crear admin password para confirmar la creacion */}
+
 
             <Button onClick={handleSubmit} label="Submit" icon={<IoMdPersonAdd />} className="bg-blue-500 text-white w-full" />
 

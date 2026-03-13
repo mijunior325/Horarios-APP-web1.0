@@ -1,7 +1,7 @@
 import React from 'react'
 
 function Button({ onClick, className, label, disabled, icon }) {
-  const baseClass = "text-xl font-bold lg:w-1/4 gap-2 h-30 lg:h-50 md:w-full w-full shadow-lg border border-gray-300 rounded-lg flex justify-center items-center transition-colors duration-200";
+  const baseClass = "text-xl font-bold gap-2 h-15 w-full shadow-lg border border-gray-300 rounded-lg flex justify-center items-center transition-colors duration-200";
   const enabledClass = "text-white cursor-pointer";
   const disabledClass = "bg-white text-gray-500 border border-gray-500 cursor-not-allowed hover:bg-gray-400";
   // Remove color classes from className if disabled
