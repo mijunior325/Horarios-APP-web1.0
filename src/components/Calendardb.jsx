@@ -120,7 +120,7 @@ function CalendarDb() {
                                 </option>
                             ))}
                         </select>
-                    )} 
+                    )}
                 </div>
             )}
             <div className=" flex flex-col gap-20 w-auto lg:h-auto h-auto border border-gray-300 rounded-lg shadow-lg">
