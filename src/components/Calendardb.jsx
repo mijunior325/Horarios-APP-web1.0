@@ -4,6 +4,7 @@ import React, { useState, useEffect, useContext, useMemo } from 'react';
 import { AuthProvider, useAuth } from '../context/AuthContext';
 import { getTimeShifts } from "../../server/services/timeShiftService";
 import { getAllUsers } from "../../server/services/userService";
+import DeleteUserButton from './DeleteUserButton';
 
 // Simple Error Boundary
 class ErrorBoundary extends React.Component {
