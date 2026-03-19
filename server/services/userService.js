@@ -1,6 +1,7 @@
-import { doc, setDoc, getDoc, getDocs, collection, Timestamp } from "firebase/firestore";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc, getDoc, getDocs, collection, Timestamp, deleteDoc } from "firebase/firestore";
+import { createUserWithEmailAndPassword, deleteUser } from "firebase/auth";
 import { auth, db } from "../config/FirebaseConfig";
+import { deleteTimeShiftsByUserId } from "./timeShiftService";
 
 // this is used to find a user by their email
 export const findUserByEmail = async (email) => {
@@ -81,6 +82,28 @@ export const createUser = async ({ name, email, position, dept, password }) => {
     return { id: uid, password: tempPassword };
   } catch (error) {
     console.error("Error creating user:", error);
+    throw error;
+  }
+};
+
+// Delete a user from Firestore and Firebase Auth (requires re-authentication for Auth)
+export const deleteUserById = async (userId) => {
+  try {
+    // Delete all time shifts for the user
+    await deleteTimeShiftsByUserId(userId);
+    console.log("Time shifts deleted for user:", userId);
+
+    // Delete from Firestore
+    await deleteDoc(doc(db, "users", userId));
+    console.log("User deleted from Firestore:", userId);
+
+    // Note: Deleting from Firebase Auth requires the user to be signed in or admin SDK
+    // For client-side, it's not straightforward. This only deletes from Firestore and time shifts.
+    // To delete from Auth, use Firebase Admin SDK on server-side.
+
+    return true;
+  } catch (error) {
+    console.error("Error deleting user:", error);
     throw error;
   }
 };

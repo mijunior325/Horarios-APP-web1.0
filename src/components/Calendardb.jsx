@@ -4,6 +4,7 @@ import React, { useState, useEffect, useContext, useMemo } from 'react';
 import { AuthProvider, useAuth } from '../context/AuthContext';
 import { getTimeShifts } from "../../server/services/timeShiftService";
 import { getAllUsers } from "../../server/services/userService";
+import DeleteUserButton from './DeleteUserButton';
 
 // Simple Error Boundary
 class ErrorBoundary extends React.Component {
@@ -109,17 +110,29 @@ function CalendarDb() {
                     ) : users.length === 0 ? (
                         <span style={{ marginLeft: 8, fontStyle: 'italic' }}>No se encontraron usuarios</span>
                     ) : (
-                        <select
-                            value={selectedUserId}
-                            onChange={(e) => setSelectedUserId(e.target.value)}
-                        >
-                            <option value="">Todos</option>
-                            {users.map((u) => (
-                                <option key={u.id} value={u.id}>
-                                    {u.username || u.name || u.email || u.id}
-                                </option>
-                            ))}
-                        </select>
+                        <>
+                            <select
+                                value={selectedUserId}
+                                onChange={(e) => setSelectedUserId(e.target.value)}
+                            >
+                                <option value="">Todos</option>
+                                {users.map((u) => (
+                                    <option key={u.id} value={u.id}>
+                                        {u.username || u.name || u.email || u.id}
+                                    </option>
+                                ))}
+                            </select>
+                            {selectedUserId && (
+                                <DeleteUserButton
+                                    userId={selectedUserId}
+                                    onDelete={() => {
+                                        setSelectedUserId("");
+                                        // Optionally refresh users list
+                                        setUsers(prev => prev.filter(u => u.id !== selectedUserId));
+                                    }}
+                                />
+                            )}
+                        </>
                     )}
                 </div>
             )}

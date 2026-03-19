@@ -6,6 +6,10 @@ import { useNavigate } from 'react-router-dom';
 import { closeTimeShift, createTimeShift, getOpenTimeShiftByUser, openLunchShift, closeLunchShift } from '../../server/services/timeShiftService';
 import { useAuth } from '../context/AuthContext';
 import CalendarDb from '../components/Calendardb';
+import { MdOutlinePunchClock, MdOutlineLunchDining } from 'react-icons/md';
+import toast from 'react-hot-toast';
+import Button from '../components/Button';
+import InfoCard from '../components/InfoCard';
 
 
 export default function Marcador({ allUsers, getRecords }) {

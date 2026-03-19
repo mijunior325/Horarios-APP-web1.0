@@ -1,4 +1,4 @@
-import { doc, setDoc, getDoc, Timestamp, collection, query, where, getDocs } from "firebase/firestore";
+import { doc, setDoc, getDoc, Timestamp, collection, query, where, getDocs, deleteDoc } from "firebase/firestore";
 import { db } from "../config/FirebaseConfig";
 import { getAllUsers } from "./userService";
 
@@ -212,4 +212,25 @@ const getTimeShifts = async ({ userId, username, startDate, endDate }) => {
 };
 
 export { getTimeShifts };
+
+// Elimina todos los turnos asociados a un userId específico.
+// Primero consulta todos los documentos de timeShifts para el usuario,
+// luego elimina cada uno individualmente. Esto es necesario porque
+// Firestore no soporta eliminación masiva directa desde el cliente.
+const deleteTimeShiftsByUserId = async (userId) => {
+    try {
+        const timeShiftsRef = collection(db, "timeShifts");
+        const q = query(timeShiftsRef, where("userId", "==", userId));
+        const querySnapshot = await getDocs(q);
+        const deletePromises = querySnapshot.docs.map(doc => deleteDoc(doc.ref));
+        await Promise.all(deletePromises);
+        console.log(`Deleted ${deletePromises.length} time shifts for user ${userId}`);
+        return deletePromises.length;
+    } catch (error) {
+        console.error("Error deleting time shifts by user ID:", error);
+        throw error;
+    }
+};
+
+export { deleteTimeShiftsByUserId };
 
