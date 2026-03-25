@@ -110,18 +110,30 @@ function CalendarDb() {
                     ) : users.length === 0 ? (
                         <span style={{ marginLeft: 8, fontStyle: 'italic' }}>No se encontraron usuarios</span>
                     ) : (
-                        <select
-                            value={selectedUserId}
-                            onChange={(e) => setSelectedUserId(e.target.value)}
-                        >
-                            <option value="">Todos</option>
-                            {users.map((u) => (
-                                <option key={u.id} value={u.id}>
-                                    {u.username || u.name || u.email || u.id}
-                                </option>
-                            ))}
-                        </select>
-                    )} 
+                        <>
+                            <select
+                                value={selectedUserId}
+                                onChange={(e) => setSelectedUserId(e.target.value)}
+                            >
+                                <option value="">Todos</option>
+                                {users.map((u) => (
+                                    <option key={u.id} value={u.id}>
+                                        {u.username || u.name || u.email || u.id}
+                                    </option>
+                                ))}
+                            </select>
+                            {selectedUserId && (
+                                <DeleteUserButton
+                                    userId={selectedUserId}
+                                    onDelete={() => {
+                                        setSelectedUserId("");
+                                        // Optionally refresh users list
+                                        setUsers(prev => prev.filter(u => u.id !== selectedUserId));
+                                    }}
+                                />
+                            )}
+                        </>
+                    )}
                 </div>
             )}
             <div className=" flex flex-col gap-20 w-auto lg:h-auto h-auto border border-gray-300 rounded-lg shadow-lg">

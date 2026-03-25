@@ -6,17 +6,10 @@ import { useNavigate } from 'react-router-dom';
 import { closeTimeShift, createTimeShift, getOpenTimeShiftByUser, openLunchShift, closeLunchShift } from '../../server/services/timeShiftService';
 import { useAuth } from '../context/AuthContext';
 import CalendarDb from '../components/Calendardb';
-import RegisterUser from '../components/RegisterUser';
-
-
-
-//UI Imports
-import { FcAssistant } from "react-icons/fc";
-import { MdOutlinePunchClock, MdOutlineLunchDining } from "react-icons/md";
-import Button from "../components/Button"
+import { MdOutlinePunchClock, MdOutlineLunchDining } from 'react-icons/md';
+import toast from 'react-hot-toast';
+import Button from '../components/Button';
 import InfoCard from '../components/InfoCard';
-import toast from "react-hot-toast"
-import { MdOutlineLogout } from "react-icons/md";
 
 
 export default function Marcador({ allUsers, getRecords }) {
@@ -137,30 +130,23 @@ export default function Marcador({ allUsers, getRecords }) {
 
 
   return (
-    <div className="flex flex-col gap-10 justify-start min-h-screen bg-gray-50">
-      {/* Top Nav Bar */}
-      <div className="w-full flex flex-row justify-between p-8 xl:px-30 md:px-8 bg-white shadow-md items-center">
-
-        {/* Profile View */}
-        <div className="flex items-center gap-4">
-
-          {/* Icon */}
-          <FcAssistant size={48} />
-
-          {/* User Info Text */}
-          <div className='flex flex-col gap-1'>
-            <p className='font-bold text-xl text-gray-800'>{ userData?.name || `Usuario`}</p>
-            <p className='text-sm font-bold flex justify-start items-start text-blue-500'>{ userData?.role === 'admin' ? 'Administrador' : 'Empleado'}</p>
-          </div>
-        </div>
-
-        {/* Logout Button */}
-        <div className= "flex flex-row gap-2 item-center justify-center text-red-500 bg-white border border-red-500 font-bold shadow-lg rounded-xl p-4 cursor-pointer hover:bg-red-500 hover:text-white transition-colors: duration-200" onClick={handleLogout}>
-          <MdOutlineLogout size={24} />
-          {/* <p>Cerrar Sesión</p> */}
-
-          {/* {userData?.role === 'admin' && <RegisterUser />} */}
-        </div>
+    <div className="marcador">
+      <h1>Marcador de Tiempo de Trabajo</h1>
+      <p>Bienvenido, { userData?.name || `Usuario`}</p>
+      <button onClick={handleLogout} className="logout">Cerrar Sesión</button>
+      <div className="botones">
+        <button onClick={marcarEntradaTurno} disabled={entradaTurno !== null}>
+          Entrada al Turno
+        </button>
+        <button onClick={marcarEntradaLunch} disabled={openLunch === true || open === false}>
+          Entrada al Lunch
+        </button>
+        <button onClick={marcarSalidaLunch} disabled={openLunch === false || open === false}>
+          Salida del Lunch
+        </button>
+        <button onClick={marcarSalidaTurno} disabled={open === false || openLunch === true}>
+          Salida de Turno
+        </button>
       </div>
       
     {/* Body */}

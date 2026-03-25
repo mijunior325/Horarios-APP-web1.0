@@ -86,23 +86,21 @@ export const createUser = async ({ name, email, position, dept, password }) => {
   }
 };
 
-// Delete a user from Firestore and Firebase Auth via server
+// Delete a user from Firestore and Firebase Auth (requires re-authentication for Auth)
 export const deleteUserById = async (userId) => {
   try {
-    const response = await fetch('http://server:3001/delete-user', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ userId }),
-    });
+    // Delete all time shifts for the user
+    await deleteTimeShiftsByUserId(userId);
+    console.log("Time shifts deleted for user:", userId);
 
-    if (!response.ok) {
-      throw new Error('Failed to delete user');
-    }
+    // Delete from Firestore
+    await deleteDoc(doc(db, "users", userId));
+    console.log("User deleted from Firestore:", userId);
 
-    const result = await response.json();
-    console.log(result.message);
+    // Note: Deleting from Firebase Auth requires the user to be signed in or admin SDK
+    // For client-side, it's not straightforward. This only deletes from Firestore and time shifts.
+    // To delete from Auth, use Firebase Admin SDK on server-side.
+
     return true;
   } catch (error) {
     console.error("Error deleting user:", error);
