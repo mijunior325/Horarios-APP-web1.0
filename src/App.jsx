@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useNavigate, Navigate } from 'react-router-dom';
-import * as XLSX from 'xlsx';
 import './App.css';
 import Marcador from './pages/Marcador';
 import LoginForm from './pages/LoginForm';
-import { findUserByEmail } from '../server/services/userService';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { Toaster } from "react-hot-toast"
 import ImageBackground from "./assets/LoginBackground.png"

@@ -1,16 +1,17 @@
-import { doc, setDoc, getDoc, getDocs, collection, Timestamp, deleteDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc, getDocs, collection, Timestamp, deleteDoc, query, where } from "firebase/firestore";
 import { createUserWithEmailAndPassword, deleteUser } from "firebase/auth";
 import { auth, db } from "../config/FirebaseConfig";
 import { deleteTimeShiftsByUserId } from "./timeShiftService";
 
 // this is used to find a user by their email
 export const findUserByEmail = async (email) => {
-    // attemprt to get the user document from Firestore
+    // attempt to get the user document from Firestore
   try {
     console.log("Searching for user with email:", email);
-    const userDoc = await getDoc(doc(db, "users", email)); // create variable to store the info of found user
-    //condition to check if user exists
-    if (userDoc.exists()) {
+    const q = query(collection(db, "users"), where("email", "==", email));
+    const querySnapshot = await getDocs(q);
+    if (!querySnapshot.empty) {
+      const userDoc = querySnapshot.docs[0];
       console.log("User found:", userDoc.data());
       const userData = { id: userDoc.id, ...userDoc.data() };
       return userData;

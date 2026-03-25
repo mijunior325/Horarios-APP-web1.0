@@ -19,6 +19,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+const timeShiftsRouter = require('./routes/timeShifts');
+app.use('/api', timeShiftsRouter);
+
 app.post('/delete-user', async (req, res) => {
   const { userId } = req.body;
   try {

@@ -40,6 +40,25 @@ export default function Marcador({ allUsers, getRecords }) {
       return () => clearInterval(timer);
     }, []);
 
+    React.useEffect(() => {
+      if (userId) {
+        getOpenTimeShiftByUser(userId).then(openShift => {
+          if (openShift) {
+            setOpen(true);
+            setEntradaTurno(new Date(openShift.startTime.toDate()));
+            if (openShift.lunchStart) {
+              setOpenLunch(true);
+              setEntradaLunch(new Date(openShift.lunchStart.toDate()));
+            }
+            if (openShift.lunchEnd) {
+              setOpenLunch(false);
+              setSalidaLunch(new Date(openShift.lunchEnd.toDate()));
+            }
+          }
+        }).catch(error => console.error("Error fetching open shift:", error));
+      }
+    }, [userId]);
+
 
   // handle time shift actions
 
@@ -134,20 +153,6 @@ export default function Marcador({ allUsers, getRecords }) {
       <h1>Marcador de Tiempo de Trabajo</h1>
       <p>Bienvenido, { userData?.name || `Usuario`}</p>
       <button onClick={handleLogout} className="logout">Cerrar Sesión</button>
-      <div className="botones">
-        <button onClick={marcarEntradaTurno} disabled={entradaTurno !== null}>
-          Entrada al Turno
-        </button>
-        <button onClick={marcarEntradaLunch} disabled={openLunch === true || open === false}>
-          Entrada al Lunch
-        </button>
-        <button onClick={marcarSalidaLunch} disabled={openLunch === false || open === false}>
-          Salida del Lunch
-        </button>
-        <button onClick={marcarSalidaTurno} disabled={open === false || openLunch === true}>
-          Salida de Turno
-        </button>
-      </div>
       
     {/* Body */}
       <div className="flex flex-col p-8 xl:px-30 md:px-8 sm:px-8 gap-10">

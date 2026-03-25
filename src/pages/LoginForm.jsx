@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { findUserByEmail, findUserById } from '../../server/services/userService';
 import Input from '../components/Input';
 import LogoCompany from "../assets/LogoCompanySquare.jpg"
 import toast from "react-hot-toast";
