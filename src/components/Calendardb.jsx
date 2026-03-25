@@ -1,5 +1,3 @@
-import { AllCommunityModule, ModuleRegistry, themeQuartz } from 'ag-grid-community'; 
-import { AgGridReact } from 'ag-grid-react'; // React Data Grid Component
 import React, { useState, useEffect, useContext, useMemo } from 'react';
 import { AuthProvider, useAuth } from '../context/AuthContext';
 import { getTimeShifts } from "../../server/services/timeShiftService";
@@ -35,15 +33,6 @@ function CalendarDb() {
     const [users, setUsers] = useState([]);
     const [usersError, setUsersError] = useState(null);
     const [selectedUserId, setSelectedUserId] = useState("");
-
-    const columnDefs = useMemo(() => [
-        { headerName: "ID", field: "id", sortable: true, filter: true },
-        { headerName: "Usuario", field: "username", sortable: true, filter: true },
-        { headerName: "Entrada", field: "PunchIn", sortable: true, filter: true },
-        { headerName: "Entrada lunch", field: "LunchIn", sortable: true, filter: true },
-        { headerName: "Salida lunch", field: "LunchOut", sortable: true, filter: true },
-        { headerName: "Salida", field: "PunchOut", sortable: true, filter: true },
-    ], []);
 
     useEffect(() => {
         // populate user list once if admin
@@ -83,13 +72,33 @@ function CalendarDb() {
                 }
 
                 // convert timestamps to Date or strings for grid display
-                const normalized = shifts.map(s => ({
-                    ...s,
-                    PunchIn: s.PunchIn && s.PunchIn.toDate ? s.PunchIn.toDate() : s.PunchIn,
-                    PunchOut: s.PunchOut && s.PunchOut.toDate ? s.PunchOut.toDate() : s.PunchOut,
-                    LunchIn: s.LunchIn && s.LunchIn.toDate ? s.LunchIn.toDate() : s.LunchIn,
-                    LunchOut: s.LunchOut && s.LunchOut.toDate ? s.LunchOut.toDate() : s.LunchOut,
-                }));
+                const normalized = shifts.map(s => {
+                    const punchIn = s.PunchIn && s.PunchIn.toDate ? s.PunchIn.toDate() : s.PunchIn;
+                    const punchOut = s.PunchOut && s.PunchOut.toDate ? s.PunchOut.toDate() : s.PunchOut;
+                    const lunchIn = s.LunchIn && s.LunchIn.toDate ? s.LunchIn.toDate() : s.LunchIn;
+                    const lunchOut = s.LunchOut && s.LunchOut.toDate ? s.LunchOut.toDate() : s.LunchOut;
+
+                    let workedHours = "-";
+                    if (punchIn && punchOut) {
+                        const totalMs = punchOut - punchIn;
+                        let lunchMs = 0;
+                        if (lunchIn && lunchOut) {
+                            lunchMs = lunchOut - lunchIn;
+                        }
+                        const workedMs = totalMs - lunchMs;
+                        const hours = workedMs / (1000 * 60 * 60);
+                        workedHours = hours.toFixed(2) + " horas";
+                    }
+
+                    return {
+                        ...s,
+                        PunchIn: punchIn,
+                        PunchOut: punchOut,
+                        LunchIn: lunchIn,
+                        LunchOut: lunchOut,
+                        workedHours,
+                    };
+                });
 
                 setRecords(normalized);
             } catch (error) {
@@ -148,6 +157,7 @@ function CalendarDb() {
                             <th className="px-4 py-4 bg-gray-200">Salida lunch</th>
                             <th className="px-4 py-4 bg-gray-200">Salida</th>
                             <th className="px-4 py-4 bg-gray-200">Fecha</th>
+                            <th className="px-4 py-4 bg-gray-200">Horas Trabajadas</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -160,6 +170,7 @@ function CalendarDb() {
                                 <td className="border-b border-gray-200 px-4 py-2">{record.LunchOut ? new Date(record.LunchOut).toLocaleTimeString() : "-"}</td>
                                 <td className="border-b border-gray-200 px-4 py-2">{record.PunchOut ? new Date(record.PunchOut).toLocaleTimeString() : "-"}</td>
                                 <td className="border-b border-gray-200 px-4 py-2">{record.PunchIn ? new Date(record.PunchIn).toLocaleDateString() : "-"}</td>
+                                <td className="border-b border-gray-200 px-4 py-2">{record.workedHours}</td>
                             </tr>
                         ))}
                     </tbody>    

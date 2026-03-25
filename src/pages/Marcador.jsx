@@ -20,6 +20,7 @@ export default function Marcador({ allUsers, getRecords }) {
   const [displayCalendar, setDisplayCalendar] = useState(false);
   const [open, setOpen] = useState(false);
   const [openLunch, setOpenLunch] = useState(false);
+  const [lunchStarted, setLunchStarted] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const { logout, userData } = useAuth();
   const [selectedUser, setSelectedUser] = useState(userData?.name || userData?.email || '');
@@ -176,7 +177,7 @@ export default function Marcador({ allUsers, getRecords }) {
             </div>
             {/* Button Section Marcador */}
           <div className="w-full flex lg:flex-row md:flex-col flex-col gap-4 justify-center items-center">
-            <Button label="Entrar al Turno" onClick={marcarEntradaTurno} disabled={entradaTurno !== null} className="bg-green-500 hover:bg-green-700" icon={<MdOutlinePunchClock size={42}/>}/>
+            <Button label="Entrar al Turno" onClick={marcarEntradaTurno} disabled={open} className="bg-green-500 hover:bg-green-700" icon={<MdOutlinePunchClock size={42}/>}/>
             <Button label="Entrar al Lunch" onClick={marcarEntradaLunch} disabled={openLunch === true || open === false} className="bg-amber-500 hover:bg-amber-700" icon={<MdOutlineLunchDining size={42}/>} />
             <Button label="Salir del Lunch" onClick={marcarSalidaLunch} disabled={openLunch === false || open === false} className="bg-amber-500 hover:bg-amber-700" icon={<MdOutlineLunchDining size={42}/>}/>
             <Button label="Salir del Turno" onClick={marcarSalidaTurno} disabled={open === false || openLunch === true} className="bg-red-500 hover:bg-red-700" icon={<MdOutlinePunchClock size={42}/>} />
