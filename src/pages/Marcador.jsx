@@ -10,6 +10,7 @@ import { MdOutlinePunchClock, MdOutlineLunchDining } from 'react-icons/md';
 import toast from 'react-hot-toast';
 import Button from '../components/Button';
 import InfoCard from '../components/InfoCard';
+import RegisterUser from '../components/RegisterUser';
 
 
 export default function Marcador({ allUsers, getRecords }) {
@@ -151,6 +152,7 @@ export default function Marcador({ allUsers, getRecords }) {
 
   return (
     <div className="marcador">
+      <RegisterUser />
       <h1>Marcador de Tiempo de Trabajo</h1>
       <p>Bienvenido, { userData?.name || `Usuario`}</p>
       <button onClick={handleLogout} className="logout">Cerrar Sesión</button>
