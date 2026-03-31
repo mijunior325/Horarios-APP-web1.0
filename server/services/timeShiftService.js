@@ -234,3 +234,17 @@ const deleteTimeShiftsByUserId = async (userId) => {
 
 export { deleteTimeShiftsByUserId };
 
+// Elimina un registro específico de timeShifts por su ID.
+// Se usa desde la UI para borrar filas individuales del calendario.
+const deleteTimeShiftById = async (timeShiftId) => {
+    try {
+        await deleteDoc(doc(db, "timeShifts", timeShiftId));
+        return true;
+    } catch (error) {
+        console.error("Error deleting time shift by ID:", error);
+        throw error;
+    }
+};
+
+export { deleteTimeShiftById };
+

@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useContext, useMemo } from 'react';
 import { AuthProvider, useAuth } from '../context/AuthContext';
-import { getTimeShifts } from "../../server/services/timeShiftService";
+import { deleteTimeShiftById, getTimeShifts } from "../../server/services/timeShiftService";
 import { getAllUsers } from "../../server/services/userService";
 import DeleteUserButton from './DeleteUserButton';
+import toast from 'react-hot-toast';
+import * as XLSX from "xlsx";
 
 // Simple Error Boundary
 class ErrorBoundary extends React.Component {
@@ -26,13 +28,63 @@ class ErrorBoundary extends React.Component {
         return this.props.children;
     }
 }
-
+// boton para exportar a excel
 function CalendarDb() {
     const { userData } = useAuth() || {};
     const [records, setRecords] = useState([]);
     const [users, setUsers] = useState([]);
     const [usersError, setUsersError] = useState(null);
     const [selectedUserId, setSelectedUserId] = useState("");
+
+    const formatDateTime = (value) => {
+        if (!value) return "-";
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return "-";
+        return date.toLocaleString();
+    };
+
+    const exportToExcel = () => {
+        if (!records.length) {
+            toast.error("No hay registros para exportar.");
+            return;
+        }
+
+        const rows = records.map((record) => ({
+            Usuario: record.username || "-",
+            Entrada: formatDateTime(record.PunchIn),
+            "Entrada lunch": formatDateTime(record.LunchIn),
+            "Salida lunch": formatDateTime(record.LunchOut),
+            Salida: formatDateTime(record.PunchOut),
+            Fecha: record.PunchIn ? new Date(record.PunchIn).toLocaleDateString() : "-",
+            "Horas Trabajadas": record.workedHours || "-",
+        }));
+
+        const worksheet = XLSX.utils.json_to_sheet(rows);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Registros");
+        const today = new Date().toISOString().slice(0, 10);
+        XLSX.writeFile(workbook, `registros_calendario_${today}.xlsx`);
+        toast.success("Archivo exportado correctamente.");
+    };
+
+    const handleDeleteAllRecords = async () => {
+        if (!records.length) {
+            toast.error("No hay registros para eliminar.");
+            return;
+        }
+
+        const confirmDelete = window.confirm("¿Eliminar todos los registros visibles del calendario? Esta acción no se puede deshacer.");
+        if (!confirmDelete) return;
+
+        try {
+            await Promise.all(records.map((record) => deleteTimeShiftById(record.id)));
+            setRecords([]);
+            toast.success("Todos los registros fueron eliminados.");
+        } catch (error) {
+            console.error("Error deleting all time shift records:", error);
+            toast.error(error?.message || "No se pudieron eliminar todos los registros.");
+        }
+    };
 
     useEffect(() => {
         // populate user list once if admin
@@ -145,6 +197,20 @@ function CalendarDb() {
                     )}
                 </div>
             )}
+            <div className='flex items-center justify-end gap-3 mb-4'>
+                <button
+                    onClick={exportToExcel}
+                    className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+                >
+                    Exportar a Excel
+                </button>
+                <button
+                    onClick={handleDeleteAllRecords}
+                    className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                >
+                    Eliminar todos los registros
+                </button>
+            </div>
             <div className=" flex flex-col gap-20 w-auto lg:h-auto h-auto border border-gray-300 rounded-lg shadow-lg">
                 <div className="w-full overflow-x-auto sm:overflow-x-visible">
                 <table className="lg:table-auto md:table-auto table-auto w-full text-left">
